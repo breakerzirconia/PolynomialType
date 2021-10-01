@@ -1,0 +1,49 @@
+\import Data.Maybe
+\import src.SP
+\import src.Vector
+
+\module Basic
+
+\data SimpSum (A : \Type) (n : Nat) \elim n
+  | 1 => term A
+  | suc (suc n) => sum (A +++ SimpSum A (suc n))
+  \where {
+    \func extract {A : \Type} (m : Nat) {n : Nat} (s : SimpSum A n) : Maybe A
+    \elim m, n, s
+      | 0, 1, term a => just a
+      | suc m, 1, term a => nothing
+      | 0, suc (suc n), sum s => \case \elim s \with {
+        | inl a => just a
+        | inr z => nothing
+      }
+      | suc m, suc (suc n), sum s => \case \elim s \with {
+        | inl a => nothing
+        | inr z => extract m z
+      }
+  }
+
+\func simpsstop {A : \Type} (a : A) {n : Nat} : SimpSum A (suc n) \elim n
+  | 0 => term a
+  | suc n => sum (inl a)
+
+\func simpsadvance {A : \Type} {n : Nat} (s : SimpSum A (suc n)) : SimpSum A (suc (suc n)) => sum (inr s)
+
+\data SimpProd (A : \Type) (n : Nat) \elim n
+  | 1 => factor A
+  | suc (suc n) => prod (A *** SimpProd A (suc n))
+  \where {
+    \func extract {A : \Type} (m : Nat) {n : Nat} (p : SimpProd A n) : Maybe A
+      \elim m, n, p
+        | 0, 1, factor a => just a
+        | suc m, 1, factor a => nothing
+        | 0, suc (suc n), prod p => \case \elim p \with {
+          | ** a b => just a
+        }
+        | suc m, suc (suc n), prod p => \case \elim p \with {
+          | ** a b => extract m b
+        }
+  }
+
+\func simppcompose {A : \Type} {n : Nat} (vec : Vec A (suc n)) : SimpProd A (suc n) \elim n, vec
+  | 0, :- a vnil => factor a
+  | (suc n), :- a as => prod (a ** simppcompose {A} {n} as)

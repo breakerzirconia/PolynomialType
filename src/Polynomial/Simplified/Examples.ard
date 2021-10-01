@@ -1,0 +1,27 @@
+\import Data.Maybe
+\import src.Polynomial.Simplified.Basic
+\import src.Vector
+
+\module Examples
+
+\func SimpSum-example : SimpSum Nat 3 => simpsadvance (simpsadvance (simpsstop 8))
+  \where {
+    \func extract-0 : SimpSum.extract 0 SimpSum-example = nothing => idp
+
+    \func extract-1 : SimpSum.extract 1 SimpSum-example = nothing => idp
+
+    \func extract-2 : SimpSum.extract 2 SimpSum-example = just 8 => idp
+
+    \func extract-3 : SimpSum.extract 3 SimpSum-example = nothing => idp
+  }
+
+\func SimpProd-example : SimpProd Nat 3 => simppcompose (4 :- 9 :- 8 :- vnil)
+  \where {
+    \func extract-0 : SimpProd.extract 0 SimpProd-example = just 4 => idp
+
+    \func extract-1 : SimpProd.extract 1 SimpProd-example = just 9 => idp
+
+    \func extract-2 : SimpProd.extract 2 SimpProd-example = just 8 => idp
+
+    \func extract-3 : SimpProd.extract 3 SimpProd-example = nothing => idp
+  }

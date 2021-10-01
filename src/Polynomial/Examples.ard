@@ -1,6 +1,6 @@
 \import Data.Maybe
 \import Function
-\import src.PolynomialType
+\import src.Polynomial.Basic
 \import src.SP
 \import src.Vector
 

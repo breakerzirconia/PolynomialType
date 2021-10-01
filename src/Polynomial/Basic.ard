@@ -5,7 +5,7 @@
 \import src.SP
 \import src.Vector
 
-\module PolynomialType
+\module Basic
 
 \data Sum {A : Nat -> \Type} (n : Nat) (vec : Vec (\Pi (m : Nat) -> A m) n) \elim n, vec
   | 1, :- a vnil => term
