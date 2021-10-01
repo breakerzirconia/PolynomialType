@@ -1,0 +1,85 @@
+\import Data.Maybe
+\import Function
+\import Logic
+\import src.MaybeOperations
+\import src.SP
+\import src.Vector
+
+\module PolynomialType
+
+\data Sum {A : Nat -> \Type} (n : Nat) (vec : Vec (\Pi (m : Nat) -> A m) n) \elim n, vec
+  | 1, :- a vnil => term
+  | suc (suc n), :- a as => sum ((\Sigma) +++ Sum (suc n) as)
+  \where {
+    \func extract {A : Nat -> \Type} (m : Nat) (f : \Pi (m : Nat) -> A m -> A (suc m))
+                  {n : Nat} {vec : Vec (\Pi (m : Nat) -> A m) n} (s : Sum n vec)
+      : Maybe (A m)
+    \elim m, n, vec, s
+      | 0, 1, :- a vnil, term => just (a 0)
+      | suc m, 1, :- a vnil, term => nothing
+      | 0, suc (suc n), :- a vec, sum s => \case \elim s \with {
+        | inl () => just (a 0)
+        | inr z => nothing
+      }
+      | suc m, suc (suc n), :- a vec, sum s => \case \elim s \with {
+        | inl () => nothing
+        | inr z => maybemap (f m) (extract m f z)
+      }
+  }
+
+\func Sum' {A : \Type} (n : Nat) (vec : Vec A n) => Sum {\lam _ => A} n (vmap (\lam a _ => a) vec)
+  \where {
+    \func extract' {A : \Type} (m : Nat) {n : Nat} {vec : Vec A n} (s : Sum' n vec)
+      : Maybe A => Sum.extract m (\lam _ a => a) {n} {vmap (\lam a _ => a) vec} s
+  }
+
+\func sstop {A : Nat -> \Type} {a : \Pi (m : Nat) -> A m} {n : Nat} {vec : Vec (\Pi (m : Nat) -> A m) n}
+  : Sum (suc n) (a :- vec) \elim n, vec
+  | 0, vnil => term
+  | suc n, :- x vec => sum (inl ())
+
+\func sadvance {A : Nat -> \Type} {a : \Pi (m : Nat) -> A m} {n : Nat} {vec : Vec (\Pi (m : Nat) -> A m) (suc n)}
+               (s : Sum (suc n) vec) : Sum (suc (suc n)) (a :- vec) =>
+  sum (inr s)
+
+\data Prod {A : Nat -> \Type} (n : Nat) (vec : Vec (\Pi (m : Nat) -> A m) n) \elim n, vec
+  | 1, :- a vnil => factor
+  | suc (suc n), :- a as => prod ((\Sigma) *** Prod (suc n) as)
+  \where {
+    \func extract {A : Nat -> \Type} (m : Nat) (f : \Pi (m : Nat) -> A m -> A (suc m))
+                  {n : Nat} {vec : Vec (\Pi (m : Nat) -> A m) n} (p : Prod n vec)
+      : Maybe (A m)
+    \elim m, n, vec, p
+      | 0, 1, :- a vnil, factor => just (a 0)
+      | suc m, 1, :- a vnil, factor => nothing
+      | 0, suc (suc n), :- a vec, prod p => just (a 0)
+      | suc m, suc (suc n), :- a vec, prod p => \case \elim p \with {
+        | ** () b => maybemap (f m) (extract m f b)
+      }
+  }
+
+\func Prod' {A : \Type} (n : Nat) (vec : Vec A n) => Prod {\lam _ => A} n (vmap (\lam a _ => a) vec)
+  \where {
+    \func extract' {A : \Type} (m : Nat) {n : Nat} {vec : Vec A n} (s : Prod' n vec)
+      : Maybe A => Prod.extract m (\lam _ a => a) {n} {vmap (\lam a _ => a) vec} s
+  }
+
+\func Prod'0 {A : \Type} (n : Nat) (vec : Vec A n) : \Type \elim n
+  | 0 => \Sigma
+  | suc n => Prod' (suc n) vec
+
+\func pcompose {A : Nat -> \Type} {n : Nat} {vec : Vec (\Pi (m : Nat) -> A m) (suc n)}
+  : Prod (suc n) vec \elim n, vec
+  | 0, :- a vnil => factor
+  | suc n, :- a as => prod (() ** (pcompose {A} {n} {as}))
+
+\func PolyType (Coeff : \Type) {n : Nat}
+               (vec : Vec Coeff n)
+               (Arg : \Type)
+               (arg : Arg) =>
+  Sum {\lam m => Coeff *** Prod'0 {Arg} m (repeat m arg)}
+      n
+      (vmap (\lam coeff k => coeff ** (\case \elim k \with {
+        | 0 => ()
+        | suc k => pcompose
+      })) vec)

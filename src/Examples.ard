@@ -1,0 +1,34 @@
+\import Data.Maybe
+\import Function
+\import src.PolynomialType
+\import src.SP
+\import src.Vector
+
+\module Examples
+
+\func Sum-example : Sum' 3 (0 :- 1 :- 2 :- vnil) => sadvance sstop
+  \where {
+    \func extract-0 : Sum'.extract' 0 {3} {vmap id (0 :- 1 :- 2 :- vnil)} Sum-example = nothing => idp
+
+    \func extract-1 : Sum'.extract' 1 {3} {vmap id (0 :- 1 :- 2 :- vnil)} Sum-example = just 1 => idp
+
+    \func extract-2 : Sum'.extract' 2 {3} {vmap id (0 :- 1 :- 2 :- vnil)} Sum-example = nothing => idp
+
+    \func extract-3 : Sum'.extract' 3 {3} {vmap id (0 :- 1 :- 2 :- vnil)} Sum-example = nothing => idp
+  }
+
+\func Prod-example : Prod' 3 (0 :- 1 :- 2 :- vnil) => pcompose
+  \where {
+    \func extract-0 : Prod'.extract' 0 {3} {vmap id (0 :- 1 :- 2 :- vnil)} Prod-example = just 0 => idp
+
+    \func extract-1 : Prod'.extract' 1 {3} {vmap id (0 :- 1 :- 2 :- vnil)} Prod-example = just 1 => idp
+
+    \func extract-2 : Prod'.extract' 2 {3} {vmap id (0 :- 1 :- 2 :- vnil)} Prod-example = just 2 => idp
+
+    \func extract-3 : Prod'.extract' 3 {3} {vmap id (0 :- 1 :- 2 :- vnil)} Prod-example = nothing => idp
+  }
+
+\func PolyType-example : PolyType Nat (6 :- 1 :- 2 :- vnil) Nat 1 => sstop
+  \where {
+    \func extract-0 : Sum.extract 0 {?} PolyType-example = just (6 ** ()) => idp
+  }

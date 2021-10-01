@@ -1,0 +1,25 @@
+\import src.PolynomialType
+\import src.SP
+
+\module Vector
+
+\data Vec (A : \Type) (n : Nat) \elim n
+  | 0 => vnil
+  | suc n => \infixr 5 :- A (Vec A n)
+
+\func Vec-example : Vec (\Sigma) 3 => () :- () :- () :- vnil
+
+\func repeat {A : \Type} (n : Nat) (a : A) : Vec A n \elim n
+  | 0 => vnil
+  | suc n => a :- repeat n a
+
+\func vmap {A B : \Type} (f : A -> B) {n : Nat} (v : Vec A n) : Vec B n \elim n, v
+  | 0, vnil => vnil
+  | suc n, :- a v => (f a) :- vmap f v
+
+\func vzipwith {A B C : \Type} (f : A -> B -> C) {n : Nat} (v1 : Vec A n) (v2 : Vec B n) : Vec C n
+  \elim n, v1, v2
+    | 0, vnil, vnil => vnil
+    | suc n, :- a v1, :- b v2 => (a `f` b) :- vzipwith f v1 v2
+
+\func vzip {A B : \Type} {n : Nat} (v1 : Vec A n) (v2 : Vec B n) : Vec (A *** B) n => vzipwith (**) v1 v2

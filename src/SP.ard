@@ -1,0 +1,8 @@
+\module SP
+
+\data \infixr 3 *** (A B : \Type)
+  | \infixr 3 ** A B
+
+\data \infixr 2 +++ (A B : \Type)
+  | inl A
+  | inr B

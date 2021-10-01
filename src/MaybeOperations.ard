@@ -1,0 +1,7 @@
+\import Data.Maybe
+
+\module MaybeOperations
+
+\func maybemap {A B : \Type} (f : A -> B) (m : Maybe A) : Maybe B \elim m
+  | nothing => nothing
+  | just a => just (f a)
