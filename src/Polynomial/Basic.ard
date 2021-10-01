@@ -77,7 +77,7 @@
                (vec : Vec Coeff n)
                (Arg : \Type)
                (arg : Arg) =>
-  Sum {\lam m => Coeff *** Prod'0 {Arg} m (repeat m arg)}
+  Sum {\lam m => Coeff *** Prod'0 {Arg} m (replicate m arg)}
       n
       (vmap (\lam coeff k => coeff ** (\case \elim k \with {
         | 0 => ()

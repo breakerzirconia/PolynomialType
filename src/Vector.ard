@@ -9,9 +9,9 @@
 
 \func Vec-example : Vec (\Sigma) 3 => () :- () :- () :- vnil
 
-\func repeat {A : \Type} (n : Nat) (a : A) : Vec A n \elim n
+\func replicate {A : \Type} (n : Nat) (a : A) : Vec A n \elim n
   | 0 => vnil
-  | suc n => a :- repeat n a
+  | suc n => a :- replicate n a
 
 \func vmap {A B : \Type} (f : A -> B) {n : Nat} (v : Vec A n) : Vec B n \elim n, v
   | 0, vnil => vnil
